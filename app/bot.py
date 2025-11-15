@@ -21,15 +21,15 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith("!start"):
+    if message.content.startswith("!sv_start"):
         resp = requests.post(API_URL, json={"action": "start"})
         await message.channel.send(resp.text)
 
-    elif message.content.startswith("!stop"):
+    elif message.content.startswith("!sv_stop"):
         resp = requests.post(API_URL, json={"action": "stop"})
         await message.channel.send(resp.text)
 
-    elif message.content.startswith("!ip"):
+    elif message.content.startswith("!sv_ip"):
         resp = requests.get(API_URL)
         await message.channel.send(resp.text)
 
