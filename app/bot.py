@@ -45,7 +45,7 @@ async def on_message(message):
         await message.channel.send(resp.text)
 
     elif message.content.startswith("!sv_ip"):
-        resp = requests.get(API_URL)
+        resp = requests.get(API_URL, json={"action": "ip"})
         await message.channel.send(resp.text)
 
 # Discord Bot を別スレッドで起動
