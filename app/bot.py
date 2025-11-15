@@ -1,17 +1,32 @@
+# app/bot.py
+
 import os
+import threading
 import discord
 import requests
 from dotenv import load_dotenv
+from fastapi import FastAPI
+import uvicorn
 
+# .env から環境変数をロード
 load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 API_URL = os.getenv("API_URL")
 
+# Discord Intents の設定
 intents = discord.Intents.default()
-intents.message_content = True
+intents.message_content = True  # メッセージ内容を取得する場合は必須
 client = discord.Client(intents=intents)
 
+# FastAPI アプリ（Koyeb ヘルスチェック用）
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"status": "running"}
+
+# Discord Bot イベント
 @client.event
 async def on_ready():
     print(f"Bot connected as {client.user}")
@@ -33,4 +48,12 @@ async def on_message(message):
         resp = requests.get(API_URL)
         await message.channel.send(resp.text)
 
-client.run(TOKEN)
+# Discord Bot を別スレッドで起動
+def run_bot():
+    client.run(TOKEN)
+
+threading.Thread(target=run_bot).start()
+
+# FastAPI サーバを起動（Koyeb のヘルスチェック用）
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
